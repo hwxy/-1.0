@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+    *{
+        margin: 0;
+        padding: 0;
+    }
+    ul,li{
+        list-style: none;
+        height: 300px;
+    }
+    div{
+        width: 100%;
+        margin: 0 auto;
+    }
+    li{
+        width:10%;
+        height: 100px;
+        margin-top: 30px;
+        border: 1px solid red;
+        float: left;
+    }
+    img{
+        width:100%;
+        height: 100px;
+    }
+    .two{
+        width: 200px;
+        height: 200px;
+        background: red;
+        position:absolute;
+        top:100px;
+    }
+    </style>
+</head>
+<body>
+    <div id='div'>  
+         <ul >
+            <li draggable="true"  ondragenter="dragEnter(event)"  ondrag='drag(event)'  ondragstart="dragStart(event)"  ><img draggable="false" src="./timg (1).jpeg" alt=""></li>
+            <li draggable="true"  ondragenter="dragEnter(event)"  ondrag='drag(event)'  ondragstart="dragStart(event)"  ><img draggable="false" src="./timg (2).jpeg" alt=""></li>
+            <li draggable="true"  ondragenter="dragEnter(event)"  ondrag='drag(event)'  ondragstart="dragStart(event)"  ><img draggable="false" src="./timg (3).jpeg" alt=""></li>
+            <li draggable="true"  ondragenter="dragEnter(event)"  ondrag='drag(event)'  ondragstart="dragStart(event)"  ><img draggable="false" src="./timg (4).jpeg" alt=""></li>
+            <li draggable="true"  ondragenter="dragEnter(event)"  ondrag='drag(event)'  ondragstart="dragStart(event)"  ><img draggable="false" src="./timg (5).jpeg" alt=""></li>
+        </ul>
+    </div>
+    <script src="./lodash.js"></script>
+    <script>
+        let li,s,startIndex;
+        li = document.querySelectorAll('li');
+        let ul = document.querySelector('ul');
+        let arr = [];
+
+        for(let i=0;i<li.length;i++){
+            let div = document.createElement('div');
+            let cloneNodeList = li[i].cloneNode(true); 
+            div.appendChild(cloneNodeList); 
+            arr.push(div.innerHTML);
+        }
+        
+
+        
+       function drag(e){
+        let nodeList = e.currentTarget.children;
+        for(let i = 0 ; i<nodeList.length ; i++){
+            e.target.removeChild(nodeList[i]); 
+        };
+       }
+
+       function dragStart(e){
+        let div = document.createElement('div');   
+        let li =  e.currentTarget.cloneNode(true);
+        div.appendChild(li);   
+        let str = div.innerHTML;
+        e.dataTransfer.setData('text/plain',str);    
+        let nodeList = li.children;
+        for(let i = 0 ; i<nodeList.length ; i++){
+            li.removeChild(nodeList[i]); 
+        };
+        let divOne = document.createElement('div');
+        divOne.appendChild(li); 
+
+        let startIndex = arr.indexOf(str);
+        
+        s = divOne.innerHTML;
+        arr.splice(startIndex,1,s);
+       }
+       
+       function dragEnter(e){
+        let div = document.createElement('div');
+        let cloneNodeList = e.currentTarget.cloneNode(true); 
+        div.appendChild(cloneNodeList);
+        let targetNum = div.innerHTML;  
+        let targetIndex = arr.indexOf(targetNum);
+        let index = arr.indexOf(s);
+        let a = [];
+        a = _.cloneDeep(arr);
+        if(index==targetIndex){
+            return;
+        }
+        
+        a.splice(index,1)
+        a.splice(targetIndex,0,s); 
+        
+        let count = document.querySelectorAll('li');
+        let length = ul.children.length;
+        let nodeArr = [];
+        for(let i = 0;i<length;i++){
+            nodeArr.push(count[i]);
+            ul.removeChild(count[i]);
+        }
+
+        a.forEach(e=>{    
+          nodeArr.forEach(a=>{
+          let div = document.createElement('div');
+          let nodeList = a.cloneNode(true);
+          div.appendChild(nodeList);
+          let str = div.innerHTML;
+          if(str==e){
+            ul.appendChild(a);  
+            return;
+          }      
+          })     
+        })        
+       }
+
+
+       function dragOver(event){
+        event.preventDefault()
+       
+       }
+       function drop(event){
+        event.preventDefault();
+        let node = event.dataTransfer.getData('text');
+        let div = document.createElement('div');
+        div.innerHTML = node;
+        let children = div.children[0].children[0];
+        for(var i =0;i<ul.children.length;i++){
+            if(_.isEmpty(ul.children[i].children)){
+                ul.children[i].appendChild(children);
+            }
+        }
+
+        let li = document.querySelectorAll('li')
+        arr = [];
+        for(let i=0;i<li.length;i++){
+            let div = document.createElement('div');
+            let cloneNodeList = li[i].cloneNode(true); 
+            div.appendChild(cloneNodeList); 
+            arr.push(div.innerHTML);
+          
+        }
+       }
+    ul.addEventListener('dragover',dragOver,false);
+    ul.addEventListener('drop',drop,false);
+
+
+    </script>
+</body>
+</html>
